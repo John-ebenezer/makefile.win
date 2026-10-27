@@ -1,0 +1,46 @@
+PRIM'S ALGORITHM (MINIMUM SPANNING TREE)
+========================================
+
+#include <stdio.h>
+
+#define MAX 20
+#define INF 999999
+
+int main(void) {
+    int n, graph[MAX][MAX], key[MAX], parent[MAX], inMST[MAX] = {0};
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+    if (n < 1 || n > MAX) return 1;
+    printf("Enter adjacency matrix (0 for no edge):\n");
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+            if (i != j && graph[i][j] == 0) graph[i][j] = INF;
+        }
+
+    for (int i = 0; i < n; i++) { key[i] = INF; parent[i] = -1; }
+    key[0] = 0;
+
+    for (int count = 0; count < n; count++) {
+        int u = -1, min = INF;
+        for (int v = 0; v < n; v++)
+            if (!inMST[v] && key[v] < min) { min = key[v]; u = v; }
+        if (u == -1) { printf("Graph is disconnected\n"); return 1; }
+        inMST[u] = 1;
+
+        for (int v = 0; v < n; v++)
+            if (!inMST[v] && graph[u][v] < key[v]) {
+                parent[v] = u;
+                key[v] = graph[u][v];
+            }
+    }
+
+    int total = 0;
+    printf("Edge\tWeight\n");
+    for (int i = 1; i < n; i++) {
+        printf("%d - %d\t%d\n", parent[i], i, graph[i][parent[i]]);
+        total += graph[i][parent[i]];
+    }
+    printf("Total weight of MST: %d\n", total);
+    return 0;
+}

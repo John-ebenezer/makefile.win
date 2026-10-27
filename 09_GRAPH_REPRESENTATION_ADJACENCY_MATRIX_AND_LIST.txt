@@ -1,0 +1,62 @@
+GRAPH REPRESENTATION (ADJACENCY MATRIX AND LIST)
+================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 20
+struct Node { int v; struct Node *next; };
+
+struct Node *createNode(int v) {
+    struct Node *node = malloc(sizeof(struct Node));
+    if (!node) exit(EXIT_FAILURE);
+    node->v = v;
+    node->next = NULL;
+    return node;
+}
+
+void addEdge(struct Node *adj[], int u, int v) {
+    struct Node *node = createNode(v);
+    node->next = adj[u];
+    adj[u] = node;
+    node = createNode(u);              /* undirected graph */
+    node->next = adj[v];
+    adj[v] = node;
+}
+
+int main(void) {
+    int n, e, u, v, matrix[MAX][MAX] = {0};
+    struct Node *adj[MAX] = {NULL};
+    printf("Enter number of vertices (max %d): ", MAX);
+    scanf("%d", &n);
+    if (n < 1 || n > MAX) return 1;
+    printf("Enter number of edges: ");
+    scanf("%d", &e);
+
+    for (int i = 0; i < e; i++) {
+        printf("Enter edge (u v): ");
+        scanf("%d%d", &u, &v);
+        if (u < 0 || u >= n || v < 0 || v >= n) {
+            printf("Invalid vertex; try again\n");
+            i--;
+            continue;
+        }
+        matrix[u][v] = matrix[v][u] = 1;
+        addEdge(adj, u, v);
+    }
+
+    printf("Adjacency Matrix:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) printf("%d ", matrix[i][j]);
+        printf("\n");
+    }
+
+    printf("Adjacency List:\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d: ", i);
+        struct Node *temp = adj[i];
+        while (temp) { printf("%d -> ", temp->v); temp = temp->next; }
+        printf("NULL\n");
+    }
+    return 0;
+}
